@@ -1,0 +1,195 @@
+---
+title: "Introduktion"
+author: "Daniel Lindholm"
+output: html_document
+---
+
+R är ett av de vanligaste programmen för statistisk dataanalys och har under de senaste åren vuxit i popularitet. En del kan tycka att det verkar komplicerat att använda eftersom man skriver kommandon istället för att klicka i menyer, men det är inte alls så svårt som man skulle kunna tro och dessutom gör det faktum att man skriver ner sina kommandon och sparar dem i en fil att analyserna lätt går att _reproducera_.
+
+Utöver reproducerbarheten finns flera andra fördelar:
+
+- __Programmet är helt gratis__ Till skillnad från SAS, SPSS, m.fl. är R helt fritt att ladda hem från nätet.
+- __Nya funktioner skapas hela tiden__ Det finns ett stort antal tillägg till R som gör att man kan utvidga funktionaliteten. Till skillnad från de kommersiella programmen som har några anställda programmerare som skapar nya funktioner kan alla R användare världen över bidra med nya funktioner i form av _paket_. Om man har en speciell statistisk metod som man vill använda kan man nästan ge sig på att någon annan forskare i världen redan skapat ett paket med den metoden. Inte sällan kommer nya statistiska metoder först till R, ibland flera år de implementeras i de kommersiella programmen. 
+- __Det finns en stor användarbas__ Ett mycket stort antal personer använder R, vilket gör att det oftast är lätt att få hjälp (t.ex. från kollegor eller via nätforum såsom StackOverflow) om man skulle köra fast.
+- __Vackra figurer__ Med R kan man rita väldigt fina grafer. Det finns flera som gått över till R bara för de grafiska möjligheterna.
+
+Det finns förstås även nackdelar med R. En nackdel är att R i sitt standardutförande läser in hela dataset:et i datorns arbetsminne. Detta gör att man begränsas i hur stora data man kan hantera. Dock är det på en modern dator inga problem att jobba t.ex. med Swedeheart-databaserna, som är förhållandevis små (Vill man jobba med enorma dataset går det också fint men då kan man behöva kombinera R med en databas som t.ex. SQL).
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Installera R
+R är som sagt ett textbaserat språk för statistisk dataanalys. Det är ganska vanligt att man utöver R också installerar ett användargränssnitt (även om det strikt sett inte behövs). Det kanske vanligaste är _RStudio_ (men många andra alternativ finns. Hard core-användare kanske använder text-redigerare som Emacs eller Sublime Text, men syntaxen för R är förstås densamma).
+
+1. Ladda ner R från [www.r-project.org](http://www.r-project.org), där du kan klicka dig fram till den version som passar just din dator. 
+2. Installera programmet, oftast genom att dubbelklicka på den fil du laddat ner
+3. Ladda ner RStudio från [www.rstudio.com](https://www.rstudio.com/products/rstudio/download/), välj RStudio Desktop.
+4. Installera RStudio genom att dubbelklicka på den nedladdade filen.
+5. Starta RStudio.
+
+## R som en förvuxen miniräknare
+När du startat RStudio ser du ett fönster där det står t.ex. _R version 3.4.2 (2017-09-28) -- "Short Summer"_.
+Det är själva R-fönstret. Klicka någonstans i den rutan och skriv 1+1 följt av enter. (För resten av den här demonstrationen visas det man matar in i de svagt gråa rutorna och resultaten i de vita rutorna)
+```{r}
+1 + 1
+```
+
+Du kan förstås använda alla de fyra räknesätten:
+```{r}
+31 + 5
+2 - 1
+12 / 3
+21 * 3
+```
+
+Om du vill lagra ett värde i en variabel går det förstås också bra:
+```{r}
+x <- 10
+```
+
+Lägg märke till att R använder en pil (mindre än-tecken samt ett streck) för att tilldela en variabel ett visst värde (Det går också bra att använda likhetstecken, men pilen är det "klassiska" R-sättet att skriva på). Därefter kan du använda variabeln i dina beräkningar:
+
+```{r}
+x * 3
+```
+
+Nu är det ju inte sällan så att vi vill använda flera siffror. För att kombinera flera nummer till en vektor använder vi funktionen __c__ (som i _combine_ eller _concatenate_):
+
+```{r}
+y <- c(1, 2, 3, 4, 5)
+y
+```
+
+Om du utför en operation, t.ex. multiplicera med 10 som nedan, utförs den på hela vektorn:
+```{r}
+y * 10
+```
+
+## Datatabeller -- _data.frame_
+Oftast använder vi inte enstaka värden eller vektorer när vi gör våra data-analyser, utan snarare en tabell av något slag. Det vanligaste sättet att representera data är en observation (t.ex. patientbesök el. dyl) per rad och en variabel per kolumn. (Detta är också det som i litteraturen brukar kallas _tidy data_). R har något som kallas _data.frame_ som används för att lagra datatabeller. Man kan likna det vid t.ex. Excel-ark. 
+
+
+### Skapa en data.frame
+För att skapa en _data.frame_ kan man göra så här:
+
+```{r}
+my_df <- data.frame(a = c(1, 2, 3, 4), b = c(4, 3, 2, 1))
+```
+
+Här skapas alltså en _data.frame_ som kallas _my\_df_ och som innehåller variablerna _a_ och _b_. Genom att bara ange namnet på data.frame:n skrivs dess innehåll ut:
+
+```{r}
+my_df
+```
+
+### Välja variabler och skapa nya
+Om jag bara är intresserade av en av variablerna i min data.frame kan jag välja ut den genom att använda dollar-tecknet
+```{r}
+my_df$b
+```
+
+Jag kanske vill utföra beräkningar på mina data. Då kan man använda dollar-tecknet också för att definiera nya variabler:
+```{r}
+my_df$produkt <- my_df$a * my_df$b
+
+my_df
+```
+
+Detta multiplicerar värdet på _a_ med värdet på _b_ för varje rad och sparar resultatet i variabeln som vi kallar _produkt_.
+
+Det är förstås också möjligt att jämföra variabler. Nu vill vi identifiera de rader där _b_ är större än _a_:
+
+```{r}
+my_df$b_larger <- my_df$b > my_df$a
+
+my_df
+```
+
+### Beräkningar
+Man kan göra en massa olika beräkningar på en data.frame. Om vi för ett ögonblick fokuserar på variabeln _a_:
+```{r}
+min(my_df$a)
+max(my_df$a)
+sum(my_df$a)
+mean(my_df$a)
+sd(my_df$a)
+median(my_df$a)
+```
+Här beräknade vi alltså minimum, maximum, summa, medelvärde, standardavvikelse, och median för variabeln _a_. 
+
+Vad händer om vi beräknar summan på vår variabel _b\_larger_ som ju antingen hade värdet TRUE eller FALSE? :
+```{r}
+sum(my_df$b_larger)
+```
+Som synes blir summan 2! Detta beror på att R betraktar _TRUE_ som värdet 1, och _FALSE_ som värdet 0. Detta är ganska praktiskt, t.ex. när man ska beräkna hur stor _andel_ av raderna som hade ett _b_ som var större än _a_: 
+```{r}
+sum(my_df$b_larger) / nrow(my_df)
+```
+Lägg märke till att vi nu också använde funktionen _nrow_. Den räknar helt enkelt hur många rader en data.frame har, i det här fallet 4. Det var ju två rader som var _TRUE_ och därmed blir proportionen 0.5.
+
+### Sammanfattning av data
+Att beräkna t.ex. medelvärden och medianer är ju något vi gör väldigt ofta. För att underlätta detta finns en funktion i R, _summary_, som ger en fin sammanfattning av data:
+
+```{r}
+summary(my_df)
+```
+
+
+### Subset av en data.frame - Funktionen _subset_
+Ofta vill man ju utföra någon form av selektion i ett dataset. Tänk om jag bara var intresserad av de observationer där _b_ var större än _a_. Då kan man använda funktionen _subset_:
+```{r}
+my_subsetted_df <- subset(my_df, my_df$b_larger == TRUE)
+my_subsetted_df
+```
+
+Notera att vi här använde dubbla likhetstecken. I R (och många andra språk) används dubbla likhetstecken för att testa likhet, medan enkla likhetstecken används för att tilldela ett värde till t.ex. en variabel.
+
+Istället för att använda variabeln _b\_larger_ som vi definerade nyss kan vi också använda variablerna _a_ och _b_ direkt:
+
+```{r}
+my_second_subsetted_df <- subset(my_df, my_df$b > my_df$a)
+my_second_subsetted_df
+```
+
+Vi kan verifiera att dessa två dataset är helt identiska:
+```{r}
+identical(my_subsetted_df, my_second_subsetted_df)
+```
+
+### Subset av en data.frame - Hakparenteser
+Det finns flera andra sätt att ta delmängder av en data.frame. Ett annat vanligt sätt är med hakparenteser, på formen
+
+__df[_rad_, _kolumn_]__
+
+Ponera att jag är intresserad av de första 3 raderna och de 2 första kolumnerna: 
+
+```{r}
+my_df[1:3, 1:2]
+```
+
+Lägg märke till användningen av kolon här. 1:3 ger alla heltal fr.o.m. 1 t.o.m. 3:
+```{r}
+1:3
+```
+
+Vill jag ha värdet på första raden i första kolumnen:
+```{r}
+my_df[1, 1]
+```
+
+
+## Sammanfattning
+I det här första avsnittet har vi lärt oss:
+
+- Hur man installerar R
+- Hur man kan använda R som en kalkylator
+- Att man kan använda funktionen __c__ för att skapa en vektor av värden
+- Hur man skapar en _data.frame_ och nya variabler
+- Hur man kan utföra enklare beräkningar
+- Hur man snabbt kan få en sammanfattning av data
+- Hur man kan ta en delmängd av en _data.frame_, dels med funktionen _subset_, dels med hjälp av hakparenteser
+
+I det kommande avsnittet går vi igenom olika [_paket_](paket.html) för att utvidga R's funktionalitet.
+
+<center>[nästa](paket.html)</center>

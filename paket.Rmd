@@ -1,0 +1,62 @@
+---
+title: "Paket"
+author: "Daniel Lindholm"
+date: "11/16/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Vad är paket?
+Det går att utvidga R's funktionalitet. När R startas laddas normalt sett bara det mest grundläggande. När man sedan vill göra specifika uppgifter kan man då ladda _paket_ som innehåller funktioner som gör det man vill. Det finns för närvarande c:a 10,000 olika paket för R. Till skillnad från kommersiell programvara är källkoden i regel helt öppen, vilket gör att andra användare kan granska koden (~ peer review) och dessutom komma med förslag på förbättringar. Detta gör att nya statistiska metoder oftast implementeras först i R innan de når de kommersiella programvarorna. Det ger också möjligheter för den enskilda forskaren/statistikern/bioinformatikern att skapa egna paket som underlättar just de uppgifter den personen utför regelbundet. 
+
+## Hur laddar jag ett paket?
+Paket laddas genom funktionen _library_. Om jag t.ex. vill köra överlevnadsanalyser inkl Kaplan-Meier-kurvor och Cox-modeller är paketet _survival_ det jag vill åt. Det laddas på det här viset:
+
+```{r}
+library(survival)
+```
+
+Alternativt, om du använder RStudio, så kan du i rutan 'Packages' leta upp ditt paket i listan och klicka i rutan för att ladda det. Det bör dock redan nu nämnas att det är en klar fördel att skriva ner alla steg i dataanalysen (inkl. vilka paket man laddar) i ett skript. Detta för att analyserna ska gå att reproducera.
+
+## Hur installerar jag ett paket?
+Om du vill använda ett paket som inte finns installerat måste du hämta och installera det. För det använder vi funktionen _install.packages_:
+```{r, eval=FALSE}
+install.packages("ggplot2")
+library(ggplot2)
+```
+I det här fallet installerades _ggplot2_, som är ett av de mest använda paketen för att plotta data. Lägg märke till citationstecknen. Sedan laddade vi paketet med hjälp av funktionen _library_.
+
+## Hur vet jag vilka kommandon som finns i varje paket?
+I RStudio kan du i "Packages"-rutan klicka på paketets namn och sedan klicka dig vidare till varje funktion. Du kan också använda _help_-funktionen:
+```{r, eval = FALSE}
+help(package = "ggplot2")
+```
+
+## Men vilka paket ska jag använda? 
+Det beror ju helt på vad du vill göra. Men för klassisk medicinsk forskning/epidemiologi använder jag ofta följande paket (__fet stil__ = uppfattas av mig som helt nödvändigt; _kursiv stil_ = användbart men inte alltid helt nödvändigt) :
+
+| Syfte              | Paket                                  |
+|:-------------------|:---------------------------------------|
+| Data management    | __dplyr__, _tidyr_                     |
+| Plottar            | __ggplot2__                            |
+| Överlevnadsanalys  | __survival__                           |
+| Kaplan-Meier-kurvor | _survminer_                           |
+| Övrig modellering  | __rms__ (regression modeling strategies) |
+| Imputation         | __mice__, _missForest_                   |
+| Läsa in data       | __readr__ (för t.ex. filer i CSV, TSV); __haven__ (för filer i Stata, SPSS, SAS-format); _readxl_ (om du mot förmodan skulle få en datafil i Excel-format); _data.table_ (Innehåller funktionen _fread_ som är väldigt snabb på att läsa in större datamängder)|
+| Reproducerbara rapporter | __knitr__                        |
+| Övriga generella funktioner (t.ex. tabeller) | _Hmisc_ |
+
+Listan kan göras lång, och det finns förstås en uppsjö av paket som kan lösa samma eller besläktade problem. Merparten av de ovan nämnda är mycket välanvända paket som testats av ett stort antal användare. 
+
+## Sammanfattning
+
+I det här avsnittet har vi lärt oss vad paket är, hur vi installerar dem, och lär oss vilka funktioner som finns i paketen. I nästa avsnitt lär vi oss att använda paket för att [läsa in data i R](importera_data.html).
+
+<center>[föregående](introduktion.html) \| [nästa](importera_data.html)</center>
+
+
+

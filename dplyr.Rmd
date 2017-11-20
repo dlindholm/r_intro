@@ -1,0 +1,126 @@
+---
+title: "Introduktion till _dplyr_"
+author: "Daniel Lindholm"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+I [introduktionen](introduktion.html) lärde vi oss hur man kunde använda dollar-tecken, hakparenteser och _subset_-funktionen för att göra urval i våra data. Som alternativ finns ett mycket använt paket, _dplyr_, som underlättar data management mycket. Detta genom att man använder funktioner som är verb för att bearbeta data. Vi introducerar också vad vi kallar _pipe_ (som finns i magrittr-paketet som laddas automatiskt när vi laddar dplyr). Vi börjar med att ladda _dplyr_-paketet och våra data:
+
+```{r, eval=FALSE}
+install.packages("dplyr") # Behöver bara köras en gång
+library(dplyr)
+library(readr)
+iris <- read_csv("iris.csv")
+```
+
+```{r, echo = FALSE}
+library(dplyr, quietly = TRUE)
+library(readr, quietly = TRUE)
+setwd("~/R/r_workshop")
+iris <- read_csv("iris.csv")
+```
+
+## Pipe
+Pipe-kommandot, __%>%__ kan betraktas just som ett rör där flödet är från vänster till höger. Det som står på vänster sida om kommandot skickas in i funktionen till höger om __%>%__. 
+
+```{r}
+iris %>% print()
+```
+
+I det här fallet tog vi vår data.frame iris, skickade den till funktionen _print_ som då skriver ut dataset:et på skärmen (lägg märke till att bara de första tio raderna skrevs ut, detta för att vi använder _dplyr_-paketet och en 'variant' av data.frame som kallas _tibble_).
+
+## Välja kolumner - _select_
+Verbet _select_ gör precis vad man skulle tro, dvs väljer ut en eller flera kolumner:
+```{r}
+iris %>% select(Sepal.Length)
+```
+
+Notera att vi inte sparade resultatet, det skrevs bara ut till skärmen. För att spara använder vi som vanligt pilen __<-__ :
+```{r}
+iris_sl <- iris %>% select(Sepal.Length)
+iris_sl
+```
+
+Vi kan välja flera kolumner:
+```{r}
+iris %>% select(Sepal.Length, Sepal.Width)
+```
+
+Vi kan också välja alla kolumner vars namn börjar på en speciell text med hjälp av funktionen _starts\_with_:
+```{r}
+iris %>% select(starts_with("Petal"))
+```
+
+... eller slutar på en speciell text med hjälp av _ends\_with_:
+```{r}
+iris %>% select(ends_with("Width"))
+```
+
+## Välja rader - _filter_
+Om vi istället vill välja observationer, dvs rader i vår data.frame, så använder vi verbet _filter_. Vi kan alltså filtrera data genom att specificera urvalskriterier. Ponera att jag bara är intresserad av iris-blommor av arten _versicolor_:
+```{r}
+iris %>% filter(Species == "versicolor")
+```
+
+Det går också fint att kombinera flera villkor som vi ska filtrera på. Jag kanske bara vill titta på blommorna av arten _versicolor_ och vars _Sepal.Length_ är större än 6.5: 
+```{r}
+iris %>% filter(Species == "versicolor" & Sepal.Length > 6.5)
+```
+
+Notera __&__ som alltså betyder _och_, dvs att båda villkoren ska vara uppfyllda. Om det istället räcker med att ett av villkoren ska vara uppfyllda, dvs arten _versicolor_ eller _Sepal.Length_ större än 6.5, använder vi __|__ : 
+
+```{r}
+iris %>% filter(Species == "versicolor" | Sepal.Length > 6.5)
+```
+
+## Byt namn på en variabel - _rename_
+
+Vill vi byta namn på en variabel kan vi använda verbet _rename_:
+```{r}
+iris %>% rename(Art = Species)
+```
+(Observera att vi här använde ett enkelt likhetstecken, till skillnad från filter-exemplen ovan, där vi använde dubbla likhetstecken för att testa likhet)
+
+## Skapa en ny variabel - _mutate_
+Verbet _mutate_ har i det här fallet inget med genetik att göra! Det används för att antingen ändra en befintlig variabel eller för att skapa en ny. Vi kanske vill beräkna kvoten mellan Sepal.Length och Sepal.Width:
+
+```{r}
+iris %>% mutate(Sepal.Ratio = Sepal.Length / Sepal.Width)
+```
+
+Vi kanske vill kategorisera någon kontinuerlig variabel (hemska tanke, man vill ju helst använda den fulla kontinuerliga informationen :) !). I det fallet kan vi ta hjälp av funktionen _ifelse_ med följande konstruktion:
+
+ifelse(_villkor_, _positivt_utfall_, _negativt\_utfall_)
+
+Så ponera att jag vill skapa en variabel som får värdet _"long"_ om Sepal.Length är 5 eller större, och i annat fall värdet _"short"_ :
+```{r}
+iris %>% mutate(SL_cat = ifelse(Sepal.Length >= 5, "long", "short"))
+```
+
+På samma sätt som med _select_ kan man skapa flera nya variabler genom att separera varje ny definition med ett komma-tecken.
+
+## Kombinera flera verb
+Hittills har vi använt ett verb i taget, men det går utmärkt att kombinera flera till en kedja av operationer som ska utföras:
+
+```{r}
+sepal_data <- iris %>%
+  filter(Species == "versicolor") %>%
+  select(starts_with("Sepal")) %>%
+  mutate(Sepal.Ratio = Sepal.Length / Sepal.Width)
+```
+
+Här tog vi alltså dataset:et iris, valde ut bara de rader som hade värdet "versicolor" i kolumnen Species; sedan valde vi ut bara de kolumner vars namn börjar med Sepal; skapade en ny variabel som innehåller kvoten av Sepal.Length och Sepal.Width. Denna nya data.frame lagrades sedan i sepal_data. Låt oss se hur det ser ut:
+
+```{r}
+sepal_data
+```
+
+
+## Sammanfattning
+I det här avsnittet har vi gått igenom mycket! Vi har lärt oss om __%>%__, hur man väljer kolumner (_select_) respektive rader (_filter_), hur man byter namn på variabler (_rename_) och hur man skapar nya  (_mutate_). Det finns ytterligare funktionalitet som vi kommer att gå igenom senare, framförallt hur man [kombinerar olika dataset](join.html), hur man kan [gruppera data](group.html) och utföra operationer på de olika grupperna. Men i nästa avsnitt ska vi börja plotta! 
+
+<center>[föregående](importera_data.html) \| [nästa](ggplot.html)</center>

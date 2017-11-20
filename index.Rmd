@@ -1,0 +1,15 @@
+---
+title: "Introduktion till R"
+author: "Daniel Lindholm"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. [Introduktion](introduktion.html)
+2. [Paket](paket.html)
+3. [Importera data](importera_data.html)
+4. [Introduktion till _dplyr_](dplyr.html)
+5. [Introduktion till _ggplot2_](ggplot.html)

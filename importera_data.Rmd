@@ -1,0 +1,84 @@
+---
+title: "Importera data i R"
+author: "Daniel Lindholm"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+En förutsättning för dataanalys är ju data. Det finns olika sätt att importera data i R. De flesta av de vanligaste data-formaten stöds. Dessutom kan man ansluta R direkt till en databas (användbart vid _riktigt stora_ dataset), men detta kommer inte att gås igenom här. 
+
+Det finns inbyggda funktioner för att läsa t.ex. komma-separerade text-filer, men här kommer vi istället använda paketet __readr__ som har ännu bättre prestanda. Vi kommer också att använda paketet __haven__ som ger oss verktyg för att importera data från Stata, SPSS, och SAS. Låt oss först installera och ladda paketen (_install.packages_-raden kan skippas om paketen redan installerats):
+
+```{r, eval = FALSE}
+install.packages(c("readr", "haven")) # Kör denna rad om paketen inte redan finns installerade
+library(readr)
+library(haven)
+```
+
+```{r, echo = FALSE}
+library(readr)
+library(haven)
+setwd("~/R/r_workshop")
+```
+
+(Notera \# ovan, som används för att skriva kommentarer i koden.)
+
+## Komma-separerad textfil
+Vi har ett dataset som handlar om klassificering av blommor (iris för att vara exakt). Den råkar finnas i olika filformat. Vi börjar med att ladda en komma-separerad textfil (i denna fil är alltså varje kolumn separerad med ett kommatecken):
+```{r}
+iris <- read_csv("iris.csv")
+```
+
+Vi får reda på att de första 4 kolumnerna i dataset:et har lästs in som _double_, vilket vi för tillfället kan betrakta som decimaltal, och den sista kolumnen som _character_ dvs som text. 
+
+Hur stort är då dataset:et? Vi kan ta reda på dimensionerna genom funktionen _dim_:
+```{r}
+dim(iris)
+```
+Det finns alltså 150 rader och 5 kolumner i det här dataset:et. 
+
+150 rader är kanske fler än vi vill visa på skärmen. Därför kan man använda _head_ för att se de första 6 raderna:
+```{r}
+head(iris)
+```
+
+... och förstås _tail_ för att se de sista 6 raderna:
+```{r}
+tail(iris)
+```
+
+## SPSS-fil
+Vi har samma dataset i SPSS-format. Låt oss först ta bort data vi laddade ovan: 
+```{r}
+rm(iris)
+```
+Kommandot är __rm__ (= remove).
+
+Låt oss nu ladda iris-dataset:et från en SAV-fil (alltså SPSS-fil):
+```{r}
+iris <- read_spss("iris.sav")
+```
+
+Vi kikar på de första raderna, men nu vill jag se 10 rader istället för 6. Detta kan vi åstadkomma såhär:
+```{r}
+head(iris, 10)
+```
+
+## Andra filformat
+Syntaxen är alltså väldigt analog mellan _readr_ och _haven_ (Det är samma personer som gjort båda paketen). En liten sammanfattning av olika filformat och hur de laddas:
+
+| Format | Funktion | Paket |
+|--------|----------|-------|
+| Komma-separerad text | read_csv(_"filnamn"_) | __readr__ | 
+| Tab-separerad text | read_tsv(_"filnamn"_) | __readr__ |
+| SAS-fil | read_sas(_"filnamn"_) | __haven__ |
+| SPSS-fil | read_spss(_"filnamn"_) | __haven__ |
+| Stata-fil | read_stata(_"filnamn"_) | __haven__ |
+
+## Sammanfattning
+I det här avsnittet har vi lärt oss hur man läser in data från de vanligaste filformaten. I nästa avsnitt introduceras paketet _dplyr_, som hjälper oss att bearbeta data på ett effektivt sätt.
+
+<center>[föregående](paket.html) \| [nästa](dplyr.html)</center>

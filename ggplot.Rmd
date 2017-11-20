@@ -1,0 +1,108 @@
+---
+title: "Introduktion till _ggplot2_"
+author: "Daniel Lindholm"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Det finns flera olika sätt att plotta data med hjälp av R. Det finns dels ett inbyggt system som brukar kallas _base plot_, dels ett paket som heter _lattice_. Numera används kanske paketet _ggplot2_ allra mest (gg står för grammar of graphics, som är ett system för datavisualisering som utvecklades av Leland Wilkinson). 
+
+Grundtanken är den att man utgår från data, där man specificerar vad som ska visualiseras. Sedan lägger man på ett eller flera lager av grafik. Det enklaste är väl att sätta igång. Låt oss använda det vid det här laget välkända iris-dataset:et.
+```{r, eval = FALSE}
+install.packages("ggplot2")
+library(ggplot2)
+data("iris")
+```
+
+```{r, echo = FALSE}
+library(ggplot2, quietly = TRUE)
+setwd("~/R/r_workshop")
+data("iris")
+```
+
+
+## Scatter plot
+Låt oss börja med att titta på om det finns något samband mellan Sepal.Length och Petal.Length. Vi använder alltså funktionen _ggplot_, specificerar sedan vilket dataset vi vill använda (_iris_), sedan specificerar vi _aestethics_, dvs vad vi vill ska visualiseras på vilken axel. Detta gör vi genom att använda funktionen _aes_:
+```{r}
+ggplot(iris, aes(x = Sepal.Width, y = Sepal.Length))
+```
+
+Men vänta nu? Vi ser ju ingenting på plotten, bara axlarna! Vi behöver alltså lägga till ett lager för att specificera vilken typ av plot vi vill använda. Dessa lager kallas _geom_. I det här fallet vill vi lägga till punkter: 
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length)) + geom_point()
+```
+
+Det tycks finnas ett samband. Vi kanske vill lägga till ett lager med en linjär regression? Då kan vi i tillägg till en _geom_ till, i det här fallet _geom\_smooth_ där vi specificerar metoden _"lm"_. (Om man inte specificerar någon metod kommer loess användas):
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length)) + geom_point() + geom_smooth(method = "lm")
+```
+
+Men ser det inte lite konstigt ut? Det tycks finnas en gruppering nere i vänstra hörnet. Som du kanske kommer ihåg handlade det här dataset:et om att klassificera olika typer av iris-blommor. Vi har ju använt skalorna _x_ och _y_; låt oss använda en till, nämligen _färg_ : 
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+Här ser vi då att blommorna i nedre vänstra hörnet tillhörde species "setosa". Observera att vi genom att lägga till färgskalan grupperade datapunkterna, men också de linjära modellerna. 
+
+## Boxplot
+Låt oss också utforska hur vi kan göra box-plottar. Nu är vi intresserade av Sepal.Width, och hur den ser ut i de olika species. Vi vill alltså ha Sepal.Width på y-axeln och Species på x-axeln:
+
+```{r}
+ggplot(iris, aes(x = Species, y = Sepal.Width)) +
+  geom_boxplot()
+```
+
+## Density plot
+Vill vi undersöka distributionerna på ett annat sätt kan vi använda densitets-plottar:
+
+```{r}
+ggplot(iris, aes(fill = Species, x = Sepal.Width)) +
+  geom_density()
+```
+ 
+I det här fallet kommer ju Sepal.Width vara på x-axeln, densiteten på y-axeln, och vi delar upp data utifrån Species. Lägg märke till att vi specificerade _fill_ snarare än _color_ (det var fyllningen av densiteterna istället för linjerna vi ville färglägga). Det verkar ju intressant, men ytorna överlappar. Låt oss ange _alpha_ för att komma till rätta med det. Alpha går från 0 till 1 där 1 är helt ogenomskinligt. Vi testar att göra plottarna lite genomskinliga genom att sätta alpha till 0.4:
+```{r}
+ggplot(iris, aes(fill = Species, x = Sepal.Width)) +
+  geom_density(alpha = 0.4)
+```
+
+## Tema
+Vi kanske inte tycker att den grå bakgrunden är så trevlig. Det finns olika teman för plottarna (och det går att ändra alla detaljer i hur plotten ritas). Vi provar ett par! För smidighets skull sparar vi plotten i en variabel, _p_, och lägger bara till teman efter hand.
+
+```{r}
+p <- ggplot(iris, aes(fill = Species, x = Sepal.Width)) +
+  geom_density(alpha = 0.4)
+
+# Svart-vitt (alltså vad gäller bakgrund etc...)
+p + theme_bw()
+```
+
+```{r}
+# Mörkt
+p + theme_dark()
+```
+
+```{r}
+# Minimalt
+p + theme_minimal()
+```
+
+```{r}
+# Helt utan linjer, axlar och dylikt
+p + theme_void()
+```
+
+
+## Andra plot-typer
+Det finns ett stort antal olika _geoms_ att använda, vilka beskrivs i [ggplot2-dokumentationen](http://ggplot2.tidyverse.org/reference/). En lathund finns [här](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf).
+
+## Sammanfattning
+I det här avsnittet har vi introducerat paketet _ggplot2_, och undersökt scatterplot, boxplot och density plot. Det finns i det närmaste oändliga möjligheter att skräddarsy plottarna utifrån vilka behov vi har. Utöver de plottyper som finns i paketet finns det _geoms_ som andra användare har utformat för att lösa specifika visualiseringsproblem.
